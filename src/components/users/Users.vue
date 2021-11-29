@@ -31,12 +31,21 @@
     </el-row>
 
     <!-- 表格区域 -->
-    <el-table :data="tableData" stripe style="width: 100%">
+    <el-table
+      :data="tableData"
+      height="500"
+      stripe
+      style="width: 100%"
+      v-loading="pictLoading"
+      element-loading-background="rgba(0, 0, 0, 0.5)"
+      element-loading-text="正在加载中"
+    >
       <el-table-column type="index"></el-table-column>
       <el-table-column label="姓名" prop="username"></el-table-column>
       <el-table-column label="邮箱" prop="email"></el-table-column>
       <el-table-column label="电话" prop="mobile"></el-table-column>
       <el-table-column label="角色" prop="role_name"></el-table-column>
+      <el-table-column label="创建时间" prop="create_time"></el-table-column>
       <el-table-column label="状态">
         <template v-slot="scope">
           <el-switch v-model="scope.row.mg_state" />
@@ -120,6 +129,7 @@
 </template>
 
 <script lang="ts">
+import { formatDate } from "../../common/date.js";
 import { Delete, Edit, Setting, Search } from "@element-plus/icons";
 export default {
   components: {
@@ -139,7 +149,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每页显示多少条数据
-        pagesize: 5,
+        pagesize: 20,
       },
       addDialogVisible: false,
       // 添加用户的表单数据
@@ -149,21 +159,33 @@ export default {
         email: "",
         mobile: "",
       },
+      pictLoading: "",
+      date: 1638153197,
     };
   },
-
+  computed: {
+    // 时间
+    formatDate(time) {
+      let date = new Date(time);
+      return formatDate(date, "yyyy.MM.dd");
+    },
+  },
   created() {
     this.gettableData();
   },
   methods: {
     // 获取所有的成员
     async gettableData() {
+      this.pictLoading = true;
+      console.log(this.pictLoading);
       const { data: res } = await this.axios.get("users", {
         params: this.queryInfo,
       });
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
       this.tableData = res.data.users;
       this.total = res.data.total;
+      this.pictLoading = false;
+      console.log(this.pictLoading);
       console.log(res.data);
     },
     handleCurrentChange(newPage) {
