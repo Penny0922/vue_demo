@@ -33,6 +33,7 @@
     <!-- 表格区域 -->
     <el-table
       :data="tableData"
+      :default-sort="{ prop: 'create_time', order: 'descending' }"
       height="500"
       stripe
       style="width: 100%"
@@ -45,7 +46,11 @@
       <el-table-column label="邮箱" prop="email"></el-table-column>
       <el-table-column label="电话" prop="mobile"></el-table-column>
       <el-table-column label="角色" prop="role_name"></el-table-column>
-      <el-table-column label="创建时间" prop="create_time"></el-table-column>
+      <el-table-column
+        label="创建时间"
+        prop="create_time"
+        sortable
+      ></el-table-column>
       <el-table-column label="状态">
         <template v-slot="scope">
           <el-switch v-model="scope.row.mg_state" />
@@ -149,7 +154,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每页显示多少条数据
-        pagesize: 20,
+        pagesize: 10,
       },
       addDialogVisible: false,
       // 添加用户的表单数据
@@ -166,8 +171,8 @@ export default {
   computed: {
     // 时间
     formatDate(time) {
-      let date = new Date(time);
-      return formatDate(date, "yyyy.MM.dd");
+      var date = new Date(time);
+      return formatDate(date, "yyyy-MM-dd");
     },
   },
   created() {
