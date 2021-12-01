@@ -10,16 +10,11 @@
     <!-- 搜索与添加区域 -->
     <el-row :gutter="20">
       <el-col :span="8">
-        <el-input
-          placeholder="请输入内容"
-          v-model="queryInfo.query"
-          clearable
-          @clear="getUserList"
-        >
+        <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable>
         </el-input>
       </el-col>
       <el-col :span="8">
-        <el-button type="primary" @click="getUserList">
+        <el-button type="primary">
           <el-icon><search /></el-icon>
         </el-button>
       </el-col>
@@ -40,17 +35,16 @@
       v-loading="pictLoading"
       element-loading-background="rgba(0, 0, 0, 0.5)"
       element-loading-text="正在加载中"
+      :header-cell-style="{ background: '#eef1f6' }"
     >
       <el-table-column type="index"></el-table-column>
       <el-table-column label="姓名" prop="username"></el-table-column>
       <el-table-column label="邮箱" prop="email"></el-table-column>
       <el-table-column label="电话" prop="mobile"></el-table-column>
       <el-table-column label="角色" prop="role_name"></el-table-column>
-      <el-table-column
-        label="创建时间"
-        prop="create_time"
-        sortable
-      ></el-table-column>
+      <el-table-column label="创建时间" sortable>{{
+        timestampToTime
+      }}</el-table-column>
       <el-table-column label="状态">
         <template v-slot="scope">
           <el-switch v-model="scope.row.mg_state" />
@@ -134,7 +128,7 @@
 </template>
 
 <script lang="ts">
-import { formatDate } from "../../common/date.js";
+//import { timestampToTime } from "../../common/date.ts";
 import { Delete, Edit, Setting, Search } from "@element-plus/icons";
 export default {
   components: {
@@ -146,7 +140,7 @@ export default {
   },
   data() {
     return {
-      // 左侧菜单数据
+      // 表格数据
       tableData: [],
       total: 0,
       queryInfo: {
@@ -168,13 +162,7 @@ export default {
       date: 1638153197,
     };
   },
-  computed: {
-    // 时间
-    formatDate(time) {
-      var date = new Date(time);
-      return formatDate(date, "yyyy-MM-dd");
-    },
-  },
+
   created() {
     this.gettableData();
   },
@@ -187,11 +175,11 @@ export default {
         params: this.queryInfo,
       });
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
+
       this.tableData = res.data.users;
       this.total = res.data.total;
       this.pictLoading = false;
       console.log(this.pictLoading);
-      console.log(res.data);
     },
     handleCurrentChange(newPage) {
       console.log(newPage);
@@ -213,5 +201,26 @@ export default {
       this.gettableData();
     },
   },
+  computed: {
+    //时间戳转换
+    timestampToTime() {
+      let a = "";
+      this.tableData.forEach((x) => {
+        //时间戳转换
+        var date = new Date(x.create_time * 1000);
+        let y = date.getFullYear();
+        let MM = date.getMonth() + 1;
+        let d = date.getDate();
+        a = y + "年" + MM + "月" + d + "日";
+        console.log(a);
+      });
+      return a;
+    },
+  },
 };
 </script>
+<style lang="less" scoped>
+.el-table__header-wrapper {
+  color: #373d3f;
+}
+</style>
