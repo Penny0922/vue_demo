@@ -30,7 +30,7 @@
       height="500"
       stripe
       style="width: 100%"
-      :span-method="objectSpanMethod"
+      :span-method="arrSpanMethod"
       v-loading="pictLoading"
       element-loading-background="rgba(0, 0, 0, 0.5)"
       element-loading-text="正在加载中"
@@ -161,10 +161,11 @@ export default {
   },
   data() {
     return {
-      position: 0,
-      arr1: [],
+      merge: [],
+      pos: "",
       // 表格数据
       tableData: [],
+
       total: 0,
       queryInfo: {
         query: "",
@@ -182,7 +183,7 @@ export default {
         mobile: "",
       },
       pictLoading: "",
-      date: 1638153197,
+
       // 控制修改用户对话框的显示与隐藏
 
       editDialogVisible: false,
@@ -200,47 +201,34 @@ export default {
     this.gettableData();
   },
   methods: {
-    warehouseNamesetdates(arr) {
-      var obj = {},
-        // eslint-disable-next-line no-unused-vars
-        k,
-        // eslint-disable-next-line no-unused-vars
-        arr1 = [];
-      for (var i = 0, len = arr.length; i < len; i++) {
-        k = arr[i].email;
-        if (obj[k]) obj[k]++;
-        else obj[k] = 1;
-      }
-      console.log("obj", obj);
-      //保存结果{el-'元素'，count-出现次数}
-      for (var o in obj) {
-        for (let i = 0; i < obj[o]; i++) {
-          if (i === 0) {
-            this.arr1.push(obj[o]);
-            console.log(arr1);
+    getSpanArr(data) {
+      for (var i = 0; i < data.length; i++) {
+        if (i === 0) {
+          this.merge.push(1);
+          this.pos = 0;
+        } else {
+          if (data[i].email === data[i - 1].email) {
+            this.merge[this.pos] += 1;
+            this.merge.push(0);
+            console.log(data[i].email);
           } else {
-            this.arr1.push(0);
-            console.log(arr1);
+            this.merge.push(1);
+            this.pos = i;
           }
         }
       }
-      console.log("arr1", this.arr1);
     },
-
     // eslint-disable-next-line no-unused-vars
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      console.log("行数据", row.email);
+    arrSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 2) {
-        const _row = this.arr1[rowIndex];
-        const _col = this.arr1[rowIndex] > 0 ? 1 : 0;
-
+        const _row = this.merge[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
         return {
           rowspan: _row,
           colspan: _col,
         };
       }
     },
-
     // 获取所有的成员
     async gettableData() {
       this.pictLoading = true;
@@ -258,8 +246,16 @@ export default {
       this.total = res.data.total;
       this.pictLoading = false;
       console.log(res.data.users);
-      this.warehouseNamesetdates(res.data.users);
+      this.merge = [];
+      this.pos = "";
+      this.getSpanArr(this.tableData);
     },
+    /* .then(function (res) {
+          console.log(res.data.data.users);
+
+          this.warehouseNamesetdates(res.data.data.users);
+        }); */
+
     handleCurrentChange(newPage) {
       console.log(newPage);
       this.queryInfo.pagenum = newPage;
