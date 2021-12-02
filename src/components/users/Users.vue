@@ -17,6 +17,7 @@
         @clear="gettableData"
       />
       <el-button type="primary" @click="gettableData"> 搜索 </el-button>
+
       <el-button type="primary" @click="addDialogVisible = true"
         >添加用户</el-button
       >
@@ -29,6 +30,7 @@
       height="500"
       stripe
       style="width: 100%"
+      :span-method="objectSpanMethod"
       v-loading="pictLoading"
       element-loading-background="rgba(0, 0, 0, 0.5)"
       element-loading-text="正在加载中"
@@ -39,9 +41,7 @@
       <el-table-column label="邮箱" prop="email"></el-table-column>
       <el-table-column label="电话" prop="mobile"></el-table-column>
       <el-table-column label="角色" prop="role_name"></el-table-column>
-      <el-table-column label="创建时间" sortable>{{
-        timestampToTime
-      }}</el-table-column>
+      <el-table-column label="创建时间">{{ timestampToTime }}</el-table-column>
       <el-table-column label="状态">
         <template v-slot="scope">
           <el-switch v-model="scope.row.mg_state" />
@@ -161,6 +161,8 @@ export default {
   },
   data() {
     return {
+      position: 0,
+      arr1: [],
       // 表格数据
       tableData: [],
       total: 0,
@@ -190,10 +192,52 @@ export default {
     };
   },
 
+  /* created() {
+    this.gettableData();
+  }, */
+
   created() {
     this.gettableData();
   },
   methods: {
+    warehouseNamesetdates(arr) {
+      var obj = {},
+        // eslint-disable-next-line no-unused-vars
+        k,
+        // eslint-disable-next-line no-unused-vars
+        arr1 = [];
+      for (var i = 0, len = arr.length; i < len; i++) {
+        k = arr[i].email;
+        if (obj[k]) obj[k]++;
+        else obj[k] = 1;
+      }
+      console.log(obj);
+      //保存结果{el-'元素'，count-出现次数}
+      for (var o in obj) {
+        for (let i = 0; i < obj[o]; i++) {
+          if (i === 0) {
+            this.arr1.push(obj[o]);
+          } else {
+            this.arr1.push(0);
+          }
+        }
+      }
+      console.log("arr1", this.arr1);
+    },
+
+    // eslint-disable-next-line no-unused-vars
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 2) {
+        const _row = this.arr1[rowIndex];
+        const _col = this.arr1[rowIndex] > 0 ? 1 : 0;
+
+        return {
+          rowspan: _row,
+          colspan: _col,
+        };
+      }
+    },
+
     // 获取所有的成员
     async gettableData() {
       this.pictLoading = true;
@@ -201,12 +245,17 @@ export default {
       const { data: res } = await this.axios.get("users", {
         params: this.queryInfo,
       });
-      if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
+      /* .then(function (res) {
+          console.log(res.data.data.users);
 
+          this.warehouseNamesetdates(res.data.data.users);
+        }); */
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
       this.tableData = res.data.users;
       this.total = res.data.total;
       this.pictLoading = false;
-      console.log(this.pictLoading);
+      console.log(res.data.users);
+      this.warehouseNamesetdates(res.data.users);
     },
     handleCurrentChange(newPage) {
       console.log(newPage);
