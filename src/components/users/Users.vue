@@ -211,14 +211,16 @@ export default {
         if (obj[k]) obj[k]++;
         else obj[k] = 1;
       }
-      console.log(obj);
+      console.log("obj", obj);
       //保存结果{el-'元素'，count-出现次数}
       for (var o in obj) {
         for (let i = 0; i < obj[o]; i++) {
           if (i === 0) {
             this.arr1.push(obj[o]);
+            console.log(arr1);
           } else {
             this.arr1.push(0);
+            console.log(arr1);
           }
         }
       }
@@ -227,6 +229,7 @@ export default {
 
     // eslint-disable-next-line no-unused-vars
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      console.log("行数据", row.email);
       if (columnIndex === 2) {
         const _row = this.arr1[rowIndex];
         const _col = this.arr1[rowIndex] > 0 ? 1 : 0;
