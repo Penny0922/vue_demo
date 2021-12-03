@@ -10,17 +10,40 @@
     <!-- 搜索与添加区域 -->
 
     <div class="handle-box">
-      <el-input
-        placeholder="请输入内容"
-        v-model="queryInfo.query"
-        clearable
-        @clear="gettableData"
-      />
-      <el-button type="primary" @click="gettableData"> 搜索 </el-button>
+      <el-row :gutter="24">
+        <el-col :span="6">
+          <el-input
+            placeholder="请输入内容"
+            v-model="queryInfo.query"
+            clearable
+            @clear="gettableData"
+            ref="input"
+          >
+            <template #append>
+              <el-button @click="search">
+                <el-icon><search /></el-icon>
+              </el-button>
+            </template>
+          </el-input>
+        </el-col>
 
-      <el-button type="primary" @click="addDialogVisible = true"
-        >添加用户</el-button
-      >
+        <el-col :span="8">
+          <!-- 日期选择 -->
+          <el-date-picker
+            v-model="queryInfo.query"
+            type="date"
+            placeholder="Pick a day"
+            value-format="YYYY年MM月D日"
+          >
+          </el-date-picker>
+          <el-button type="primary" @click="search"> 搜索 </el-button>
+        </el-col>
+        <el-col :span="8" :offset="2">
+          <el-button type="primary" @click="addDialogVisible = true"
+            >添加用户</el-button
+          >
+        </el-col>
+      </el-row>
     </div>
 
     <!-- 表格区域 -->
@@ -150,17 +173,19 @@
 
 <script>
 //import { timestampToTime } from "../../common/date.ts";
-import { Delete, Edit, Setting } from "@element-plus/icons";
+import { Delete, Edit, Setting, Search } from "@element-plus/icons";
 export default {
   components: {
     Delete,
     Edit,
     Setting,
+    Search,
 
     //注册图标组件名称
   },
   data() {
     return {
+      list: [],
       merge: [],
       pos: "",
       // 表格数据
@@ -201,6 +226,33 @@ export default {
     this.gettableData();
   },
   methods: {
+    // eslint-disable-next-line no-irregular-whitespace
+
+    //模糊查找
+    async search() {
+      //定义的新数组存放筛选之后的数据
+      this.list = [];
+      console.log(this.queryInfo.query);
+
+      console.log(this.tableData);
+      //循环模拟数据的数组
+      await this.tableData.map((msg) => {
+        //拿当前json的id、name、time去分别跟输入的值进行比较
+        //indexOf 如果在检索的字符串中没有出现要找的值是会返回-1的，所以我们这里不等于-1就是假设输入框的值在当前json里面找到的情况
+
+        if (
+          msg.email.indexOf(this.queryInfo.query) != -1 ||
+          msg.username.indexOf(this.queryInfo.query) != -1
+        ) {
+          //然后把当前json添加到list数组中
+          this.list.push(msg);
+        }
+      });
+      console.log(this.list);
+      this.tableData = this.list;
+    },
+
+    //排序
     getSpanArr(data) {
       for (var i = 0; i < data.length; i++) {
         if (i === 0) {
@@ -236,11 +288,6 @@ export default {
       const { data: res } = await this.axios.get("users", {
         params: this.queryInfo,
       });
-      /* .then(function (res) {
-          console.log(res.data.data.users);
-
-          this.warehouseNamesetdates(res.data.data.users);
-        }); */
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
       this.tableData = res.data.users;
       this.total = res.data.total;
@@ -364,13 +411,4 @@ export default {
   },
 };
 </script>
-<style lang="less" scoped>
-.handle-box {
-  margin-bottom: 20px;
-}
-
-.handle-input {
-  width: 300px;
-  display: inline-block;
-}
-</style>
+<style lang="less" scoped></style>
