@@ -1,24 +1,25 @@
 <template>
-  <div>
-    <div class="tabs-view-container">
-      <div class="tabs-wrapper">
+  <div class="tags">
+    <ul>
+      <li
+        class="tags-li"
+        :class="{ active: isActive(item.path) }"
+        v-for="item of tabList"
+        :index="item.path"
+        :key="item.path"
+        @click="goTo(item)"
+      >
         <span
-          :class="isActive(item.path)"
-          v-for="item of tabList"
-          :index="item.path"
-          :key="item.path"
-          @click="goTo(item)"
-        >
-          {{ item.name }}
-          <i v-if="item.path != '/'" @click.stop="removeTab(item)"
-            ><el-icon><close-bold /></el-icon>
-          </i>
+          v-if="item.path != '/'"
+          @click.stop="removeTab(item)"
+          class="tags-li-name"
+          >{{ item.name }}<el-icon><close-bold /></el-icon>
         </span>
-      </div>
-      <div class="tabs-close-item" style="float: right" @click="closeAllTab">
-        全部关闭
-      </div>
-    </div>
+      </li>
+    </ul>
+  </div>
+  <div class="tabs-close-item" style="float: right" @click="closeAllTab">
+    全部关闭
   </div>
 </template>
 
@@ -43,19 +44,15 @@ export default {
   },
   computed: {
     //标签是否处于当前页
-    /* isActive() {
-      return function (tab) {
-        if (tab.path === this.$route.path) {
-          return "tabs-view-item-active";
-        }
-        return "tabs-view-item";
-      };
-    }, */
+
     isFold() {
       return this.$store.state.collapse ? "el-icon-s-unfold" : "el-icon-s-fold";
     },
   },
   methods: {
+    isActive(path) {
+      return path === this.$route.path;
+    },
     goTo(tab) {
       //跳转标签
       this.$router.push({ path: tab.path });
@@ -78,36 +75,18 @@ export default {
 </script>
 
 <style scoped>
-.tabs-wrapper {
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  width: 95%;
-}
-
-.tabs-view-container {
-  display: flex;
+.tags {
   position: relative;
-  padding-left: 10px;
-  padding-right: 10px;
-  height: 33px;
+  height: 30px;
+  overflow: hidden;
   background: #fff;
-  border-bottom: 1px solid #d8dce5;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
 }
-
-.tabs-view-item {
-  display: inline-block;
-  cursor: pointer;
-  height: 25px;
-  line-height: 25px;
-  border: 1px solid #d8dce5;
-  color: #495060;
-  background: #fff;
-  padding: 0 8px;
-  font-size: 12px;
-  margin-top: 4px;
-  margin-left: 5px;
+.tags ul {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .tabs-close-item {
@@ -126,28 +105,37 @@ export default {
   margin-left: 5px;
 }
 
-.tabs-view-item-active {
-  display: inline-block;
-  cursor: pointer;
-  height: 26px;
-  line-height: 26px;
-  padding: 0 8px;
+.tags-li {
+  float: left;
+  margin: 3px 5px 2px 3px;
+  border-radius: 3px;
   font-size: 12px;
-  margin-top: 4px;
-  margin-left: 5px;
-  background-color: #5384ed;
-  color: #fff;
-  border-color: #5384ed;
+  overflow: hidden;
+
+  height: 23px;
+  line-height: 23px;
+  border: 1px solid #e9eaec;
+  background: #fff;
+  padding: 0 5px 0 12px;
+  vertical-align: middle;
+  color: #666;
 }
 
-.tabs-view-item-active:before {
-  content: "";
-  background: #fff;
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  position: relative;
-  margin-right: 2px;
+.tags-li.active {
+  background: rgb(42, 94, 153);
+}
+
+.tags-li-name {
+  float: left;
+  max-width: 80px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-right: 5px;
+  color: #666;
+}
+
+.tags-li.active .tags-li-name {
+  color: #fff;
 }
 </style>
