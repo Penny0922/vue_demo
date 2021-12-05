@@ -16,7 +16,8 @@
     "vue": "^3.0.0",
     "vue-axios": "^3.4.0",
     "vue-loader": "^14.2.2",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@element-plus/icons": "^0.0.11",
