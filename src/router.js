@@ -3,7 +3,7 @@ import Login from "./components/MyLogin.vue";
 import Home from "./components/MyHome.vue";
 import Users from "./components/users/Users.vue";
 import Roles from "./components/power/Roles.vue";
-
+import Welcome from "./components/Welcome.vue";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -12,8 +12,10 @@ const router = createRouter({
     {
       path: "/home",
       component: Home,
-      name: "首页",
+      redirect: "/welcome",
+
       children: [
+        { path: "/welcome", name: "首页", component: Welcome },
         { path: "/users", name: "用户", component: Users },
         { path: "/roles", name: "角色列表", component: Roles },
       ],

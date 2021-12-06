@@ -1,34 +1,34 @@
 <template>
-  <div class="tags">
-    <ul>
-      <li
-        class="tags-li"
-        :class="{ active: isActive(item.path) }"
-        v-for="item of tabList"
-        :index="item.path"
-        :key="item.path"
-        @click="goTo(item)"
-      >
+  <div>
+    <div class="tabs-view-container">
+      <div class="tabs-wrapper">
         <span
-          v-if="item.path != '/'"
-          @click.stop="removeTab(item)"
-          class="tags-li-name"
-          >{{ item.name }}<el-icon><close-bold /></el-icon>
+          class="tags-li"
+          :class="{ active: isActive(item.path) }"
+          v-for="item of tabList"
+          :index="item.path"
+          :key="item.path"
+          @click="goTo(item)"
+        >
+          {{ item.name }}
+          <i v-if="item.path != '/'" @click.stop="removeTab(item)"
+            ><el-icon><close /></el-icon
+          ></i>
         </span>
-      </li>
-    </ul>
-  </div>
-  <div class="tabs-close-item" style="float: right" @click="closeAllTab">
-    全部关闭
+      </div>
+      <div class="tabs-close-item" style="float: right" @click="closeAllTab">
+        全部关闭
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { CloseBold } from "@element-plus/icons";
+import { Close } from "@element-plus/icons";
 export default {
   components: {
     //注册图标组件名称
-    CloseBold,
+    Close,
   },
   name: "NavList",
   data() {
@@ -68,25 +68,29 @@ export default {
     },
     closeAllTab() {
       this.$store.commit("resetTab");
-      this.$router.push({ path: "/home" });
+      this.$router.push("/home");
     },
   },
 };
 </script>
 
 <style scoped>
-.tags {
-  position: relative;
-  height: 30px;
-  overflow: hidden;
-  background: #fff;
+.tabs-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  width: 95%;
 }
-.tags ul {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+
+.tabs-view-container {
+  display: flex;
+  position: relative;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 33px;
+  background: #fff;
+  border-bottom: 1px solid #d8dce5;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
 }
 
 .tabs-close-item {
@@ -111,7 +115,7 @@ export default {
   border-radius: 3px;
   font-size: 12px;
   overflow: hidden;
-
+  cursor: pointer;
   height: 23px;
   line-height: 23px;
   border: 1px solid #e9eaec;
@@ -119,23 +123,17 @@ export default {
   padding: 0 5px 0 12px;
   vertical-align: middle;
   color: #666;
+  -webkit-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  transition: all 0.3s ease-in;
+}
+
+.tags-li:not(.active):hover {
+  background: #f8f8f8;
 }
 
 .tags-li.active {
-  background: rgb(42, 94, 153);
-}
-
-.tags-li-name {
-  float: left;
-  max-width: 80px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  margin-right: 5px;
-  color: #666;
-}
-
-.tags-li.active .tags-li-name {
-  color: #fff;
+  background: #2e9afe;
+  color: #f8f8f8;
 }
 </style>

@@ -22,7 +22,7 @@ export default new Vuex.Store({
     },
     // 重置标签
     resetTab(state) {
-      state.tabList = [{ name: "首页", path: "/home" }];
+      state.tabList = [];
     },
   },
   actions: {
