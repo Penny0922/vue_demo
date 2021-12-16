@@ -73,10 +73,12 @@ export default {
       this.$router.push("/login");
     },
     async getMenuList() {
+      const { data: test } = await this.axios.get("menus");
+      console.log("test", test);
       const { data: res } = await this.axios.get("menus");
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
       this.menulist = res.data;
-      //console.log(res)
+      console.log(this.menulist);
     },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse;

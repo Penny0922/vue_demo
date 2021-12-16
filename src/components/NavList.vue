@@ -34,17 +34,14 @@ export default {
   data() {
     return {
       tabList: this.$store.state.tabList,
-      currentRoute: this.$route.path,
     };
   },
   mounted() {
     //保存当前页标签
     this.$store.dispatch("saveTab", this.$route);
-    console.log(this.$route.path);
+    console.log(this.$store.state.tabList);
   },
   computed: {
-    //标签是否处于当前页
-
     isFold() {
       return this.$store.state.collapse ? "el-icon-s-unfold" : "el-icon-s-fold";
     },
