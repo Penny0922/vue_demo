@@ -16,8 +16,22 @@ const router = createRouter({
 
       children: [
         { path: "/welcome", name: "首页", component: Welcome },
-        { path: "/users", name: "用户", component: Users },
-        { path: "/roles", name: "角色列表", component: Roles },
+        {
+          path: "/users",
+          name: "用户",
+          component: Users,
+          meta: {
+            keepAlive: true, // 需要被缓存
+          },
+        },
+        {
+          path: "/roles",
+          name: "角色列表",
+          component: Roles,
+          meta: {
+            keepAlive: false, // 需要被缓存
+          },
+        },
       ],
     },
   ],

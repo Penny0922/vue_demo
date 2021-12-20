@@ -100,8 +100,12 @@
     </el-table>
 
     <!-- 分页 -->
-    <el-button type="primary" @click="exportExcel">导出当前页</el-button>
-    <el-button type="primary" @click="exportExcelAll">导出全部</el-button>
+    <el-button type="primary" @click="exportExcel(this.tableData)"
+      >导出当前页</el-button
+    >
+    <el-button type="primary" @click="exportExcel(this.allData)"
+      >导出全部</el-button
+    >
     <el-pagination
       v-model:currentPage="queryInfo.pagenum"
       :page-size="queryInfo.pagesize"
@@ -267,35 +271,16 @@ export default {
   },
   methods: {
     // eslint-disable-next-line no-irregular-whitespace
-    //导出当前页excel
-    // 参数依次为导出表格表头，所有列表数据，要导出的字段列表，文件名
-    //列表下载
-
-    //导出所有数据excel
-    exportExcelAll() {
+    //导出数据excel
+    exportExcel(tabledata) {
       var that = this;
       require.ensure([], () => {
         const {
           export_json_to_excel,
-        } = require("../../assets/js/Export2Excel"); //这里必须使用绝对路径，使用@/+存放export2Excel的路径
-        const tHeader = ["序号", "姓名", "邮箱"]; // 导出的表头名信息
-        const filterVal = ["index", "username", "email"]; // 导出的表头字段名，需要导出表格字段名
-        const list = that.allData;
-        const data = that.formatJson(filterVal, list);
-        export_json_to_excel(tHeader, data, "下载全部数据"); // 导出的表格名称，根据需要自己命名
-      });
-    },
-
-    //导出当前页excel
-    exportExcel() {
-      var that = this;
-      require.ensure([], () => {
-        const {
-          export_json_to_excel,
-        } = require("../../assets/js/Export2Excel"); //这里必须使用绝对路径，使用@/+存放export2Excel的路径
-        const tHeader = ["序号", "姓名", "邮箱"]; // 导出的表头名信息
-        const filterVal = ["index", "username", "email"]; // 导出的表头字段名，需要导出表格字段名
-        const list = that.tableData;
+        } = require("../../assets/js/Export2Excel"); //这里必须使用绝对路径
+        const tHeader = ["姓名", "邮箱", "角色"]; // 导出的表头名信息
+        const filterVal = ["username", "email", "role_name"]; // 导出的表头字段名，需要导出表格字段名
+        const list = tabledata;
         const data = that.formatJson(filterVal, list);
         export_json_to_excel(tHeader, data, "下载数据excel"); // 导出的表格名称，根据需要自己命名
       });
