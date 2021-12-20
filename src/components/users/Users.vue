@@ -49,7 +49,6 @@
     <!-- 表格区域 -->
     <el-table
       :data="tableData"
-      :default-sort="{ prop: 'create_time', order: 'descending' }"
       height="500"
       stripe
       style="width: 100%"
@@ -100,8 +99,28 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 隐藏表格 -->
+    <keep-alive>
+      <component :is="showdata">
+        <el-table
+          :data="allData"
+          height="500"
+          stripe
+          style="width: 100%"
+          id="all-table"
+        >
+          <el-table-column type="index"></el-table-column>
+          <el-table-column label="姓名" prop="username"></el-table-column>
+          <el-table-column label="邮箱" prop="email"></el-table-column>
+          <el-table-column label="电话" prop="mobile"></el-table-column>
+          <el-table-column label="角色" prop="role_name"></el-table-column>
+        </el-table>
+      </component>
+    </keep-alive>
     <!-- 分页 -->
-    <el-button type="primary" @click="exportExcel">导出表格</el-button>
+    <el-button type="primary" @click="exportExcel">导出当前页</el-button>
+    <el-button type="primary" @click="exportExcelAll">导出全部</el-button>
     <el-pagination
       v-model:currentPage="queryInfo.pagenum"
       :page-size="queryInfo.pagesize"
@@ -171,7 +190,7 @@
       <el-button type="primary" @click="editUserInfo">确 定</el-button>
     </span>
   </el-dialog>
-
+  <!-- 分配角色的对话框 -->
   <el-dialog
     title="分配角色"
     v-model="setRoleDialogVisible"
@@ -222,14 +241,22 @@ export default {
       pos: "",
       // 表格数据
       tableData: [],
-
+      allData: [],
+      showdata: false,
       total: 0,
       queryInfo: {
         query: "",
         // 当前的页数
         pagenum: 1,
         // 当前每页显示多少条数据
-        pagesize: 5,
+        pagesize: 4,
+      },
+      allInfo: {
+        query: "",
+        // 当前的页数
+        pagenum: 1,
+        // 当前每页显示多少条数据
+        pagesize: "",
       },
       addDialogVisible: false,
       // 添加用户的表单数据
@@ -260,7 +287,7 @@ export default {
   },
   methods: {
     // eslint-disable-next-line no-irregular-whitespace
-    //导出excel
+    //导出当前页excel
     exportExcel() {
       /* 从表生成工作簿对象 */
       var wb = XLSX.utils.table_to_book(document.querySelector("#out-table"));
@@ -285,7 +312,31 @@ export default {
       }
       return wbout;
     },
-
+    //导出全部数据excel
+    exportExcelAll() {
+      /* 从表生成工作簿对象 */
+      var tb = XLSX.utils.table_to_book(document.querySelector("#all-table"));
+      /* 获取二进制字符串作为输出 */
+      var tbout = XLSX.write(tb, {
+        bookType: "xlsx",
+        bookSST: true,
+        type: "array",
+      });
+      try {
+        FileSaver.saveAs(
+          //Blob 对象表示一个不可变、原始数据的类文件对象。
+          //Blob 表示的不一定是JavaScript原生格式的数据。
+          //File 接口基于Blob，继承了 blob 的功能并将其扩展使其支持用户系统上的文件。
+          //返回一个新创建的 Blob 对象，其内容由参数中给定的数组串联组成。
+          new Blob([tbout], { type: "application/octet-stream" }),
+          //设置导出文件名称
+          "sheetjsall.xlsx"
+        );
+      } catch (e) {
+        if (typeof console !== "undefined") console.log(e, tbout);
+      }
+      return tbout;
+    },
     //模糊查找
     async search() {
       //定义的新数组存放筛选之后的数据
@@ -350,10 +401,16 @@ export default {
       this.tableData = res.data.users;
       this.total = res.data.total;
       this.pictLoading = false;
-      console.log(res.data.users);
+      console.log(this.tableData);
       this.merge = [];
       this.pos = "";
       this.getSpanArr(this.tableData);
+      this.allInfo.pagesize = this.total;
+      const { data: response } = await this.axios.get("users", {
+        params: this.allInfo,
+      });
+      this.allData = response.data.users;
+      console.log(this.allData);
     },
     // 展示分配角色的对话框
     async setRole(userInfo) {
@@ -406,6 +463,7 @@ export default {
       this.queryInfo.pagenum = newPage;
       this.gettableData();
     },
+    //添加用户
     async addUser() {
       // 可以发起添加用户的网络请求
       const { data: res } = await this.axios.post("users", this.addForm);
@@ -461,6 +519,7 @@ export default {
         this.$message.success("更新用户信息成功！");
       });
     },
+    //删除用户
     async removeUserById(id) {
       // 弹框询问用户是否删除数据
       const confirmResult = await this.$confirm(
@@ -502,7 +561,6 @@ export default {
         let MM = date.getMonth() + 1;
         let d = date.getDate();
         a = y + "年" + MM + "月" + d + "日";
-        console.log(a);
       });
       return a;
     },
