@@ -5,6 +5,7 @@ export default new Vuex.Store({
     tabList: [],
     isCollapse: false,
   },
+
   mutations: {
     // 保存标签
     saveTab(state, tab) {
@@ -22,7 +23,7 @@ export default new Vuex.Store({
     },
     // 重置标签
     resetTab(state) {
-      state.tabList = [];
+      state.tabList = [{ path: "/welcome", name: "首页" }];
     },
   },
   actions: {

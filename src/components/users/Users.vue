@@ -77,12 +77,15 @@
             type="primary"
             size="mini"
             @click="showEditDialog(scope.row.id)"
+            icon="el-icon-edit"
           >
-            <el-icon><edit /></el-icon>
           </el-button>
           <!-- 删除按钮 -->
-          <el-button size="mini" @click="removeUserById(scope.row.id)">
-            <el-icon><delete /></el-icon>
+          <el-button
+            size="mini"
+            @click="removeUserById(scope.row.id)"
+            icon="el-icon-delete"
+          >
           </el-button>
           <!-- 分配角色按钮 -->
           <el-tooltip
@@ -91,8 +94,12 @@
             placement="top"
             :enterable="false"
           >
-            <el-button type="warning" size="mini" @click="setRole(scope.row)">
-              <el-icon><setting /></el-icon>
+            <el-button
+              type="warning"
+              size="mini"
+              @click="setRole(scope.row)"
+              icon="el-icon-setting"
+            >
             </el-button>
           </el-tooltip>
         </template>
@@ -206,18 +213,7 @@
 </template>
 
 <script>
-//import { timestampToTime } from "../../common/date.ts";
-import { Delete, Edit, Setting, Search } from "@element-plus/icons";
-
 export default {
-  components: {
-    Delete,
-    Edit,
-    Setting,
-    Search,
-
-    //注册图标组件名称
-  },
   data() {
     return {
       list: [],
