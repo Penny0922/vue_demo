@@ -11,7 +11,7 @@
           @click="goTo(item)"
         >
           {{ item.name }}
-          <i v-if="item.path != '/'" @click.stop="removeTab(item)"
+          <i v-if="item.path !== '/welcome'" @click.stop="removeTab(item)"
             ><el-icon><close /></el-icon
           ></i>
         </span>
@@ -36,7 +36,7 @@ export default {
       tabList: this.$store.state.tabList,
     };
   },
-  mounted() {
+  created() {
     //保存当前页标签
     this.$store.dispatch("saveTab", this.$route);
     console.log(this.$store.state.tabList);
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     isActive(path) {
-      return path === this.$route.path;
+      return path === this.$route.fullPath;
     },
     goTo(tab) {
       //跳转标签

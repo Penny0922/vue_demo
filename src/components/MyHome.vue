@@ -18,7 +18,7 @@
           :collapse="isCollapse"
           :collapse-transition="false"
           :router="true"
-          :default-active="activePath"
+          :default-active="currentPath"
         >
           <!-- 一级菜单 -->
           <el-sub-menu
@@ -27,7 +27,6 @@
             :key="item.id"
           >
             <template #title>
-              <el-icon><user /></el-icon>
               <span>{{ item.authName }}</span>
             </template>
             <!-- 二级菜单 -->
@@ -36,14 +35,21 @@
               v-for="subItem in item.children"
               :key="subItem.id"
               @click="saveNavState('/' + subItem.path)"
-              >{{ subItem.authName }}
+            >
+              <i :class="item.icon"></i>{{ subItem.authName }}
             </el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-aside>
       <el-main>
         <nav-list class="navList" :key="$route.path"></nav-list>
-        <router-view></router-view>
+        <router-view v-slot="{ Component }">
+          <transition>
+            <keep-alive :include="tabList">
+              <component :is="Component" />
+            </keep-alive>
+          </transition>
+        </router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -60,12 +66,15 @@ export default {
     return {
       menulist: [],
       isCollapse: false,
-      activePath: "",
     };
   },
+  computed: {
+    currentPath() {
+      return this.$route.path;
+    },
+  },
   created() {
-    this.getMenuList(),
-      (this.activePath = window.sessionStorage.getItem("activePath"));
+    this.getMenuList();
   },
   methods: {
     logout() {
@@ -73,8 +82,6 @@ export default {
       this.$router.push("/login");
     },
     async getMenuList() {
-      const { data: test } = await this.axios.get("menus");
-      console.log("test", test);
       const { data: res } = await this.axios.get("menus");
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg);
       this.menulist = res.data;

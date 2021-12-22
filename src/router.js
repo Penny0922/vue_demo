@@ -4,6 +4,7 @@ import Home from "./components/MyHome.vue";
 import Users from "./components/users/Users.vue";
 import Roles from "./components/power/Roles.vue";
 import Welcome from "./components/Welcome.vue";
+import Rights from "./components/power/Rights.vue";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -20,17 +21,17 @@ const router = createRouter({
           path: "/users",
           name: "用户",
           component: Users,
-          meta: {
-            keepAlive: true, // 需要被缓存
-          },
         },
         {
           path: "/roles",
           name: "角色列表",
           component: Roles,
-          meta: {
-            keepAlive: false, // 需要被缓存
-          },
+          icon: "el-icon-lx-cascades",
+        },
+        {
+          path: "/rights",
+          name: "权限列表",
+          component: Rights,
         },
       ],
     },
