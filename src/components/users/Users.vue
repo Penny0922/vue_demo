@@ -20,9 +20,7 @@
             ref="input"
           >
             <template #append>
-              <el-button @click="search">
-                <el-icon><search /></el-icon>
-              </el-button>
+              <el-button icon="el-icon-search" @click="search"> </el-button>
             </template>
           </el-input>
         </el-col>
@@ -57,6 +55,68 @@
       element-loading-background="rgba(0, 0, 0, 0.5)"
       element-loading-text="正在加载中"
       :header-cell-style="{ background: '#eef1f6' }"
+      v-if="!searchFlag"
+    >
+      <el-table-column type="index"></el-table-column>
+      <el-table-column label="姓名" prop="username"></el-table-column>
+      <el-table-column label="邮箱" prop="email"></el-table-column>
+      <el-table-column label="电话" prop="mobile"></el-table-column>
+      <el-table-column label="角色" prop="role_name"></el-table-column>
+      <el-table-column label="创建时间">{{ timestampToTime }}</el-table-column>
+      <el-table-column label="状态">
+        <template v-slot="scope">
+          <el-switch v-model="scope.row.mg_state" />
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作" width="180px">
+        <template v-slot="scope">
+          <!-- 修改按钮 -->
+          <el-button
+            type="primary"
+            size="mini"
+            @click="showEditDialog(scope.row.id)"
+            icon="el-icon-edit"
+          >
+          </el-button>
+          <!-- 删除按钮 -->
+          <el-button
+            size="mini"
+            @click="removeUserById(scope.row.id)"
+            icon="el-icon-delete"
+          >
+          </el-button>
+          <!-- 分配角色按钮 -->
+          <el-tooltip
+            effect="dark"
+            content="分配角色"
+            placement="top"
+            :enterable="false"
+          >
+            <el-button
+              type="warning"
+              size="mini"
+              @click="setRole(scope.row)"
+              icon="el-icon-setting"
+            >
+            </el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 筛选后表格区域 -->
+    <el-table
+      :data="tableData"
+      height="500"
+      stripe
+      style="width: 100%"
+      :span-method="arrSpanMethod"
+      v-loading="pictLoading"
+      element-loading-background="rgba(0, 0, 0, 0.5)"
+      element-loading-text="正在加载中"
+      :header-cell-style="{ background: '#eef1f6' }"
+      v-if="searchFlag"
     >
       <el-table-column type="index"></el-table-column>
       <el-table-column label="姓名" prop="username"></el-table-column>
@@ -216,6 +276,8 @@
 export default {
   data() {
     return {
+      flag: 0,
+      searchFlag: false,
       list: [],
       merge: [],
       pos: "",
@@ -229,7 +291,7 @@ export default {
         // 当前的页数
         pagenum: 1,
         // 当前每页显示多少条数据
-        pagesize: 4,
+        pagesize: 6,
       },
       allInfo: {
         query: "",
@@ -289,24 +351,26 @@ export default {
     //模糊查找
     async search() {
       //定义的新数组存放筛选之后的数据
+      this.searchFlag = false;
+      this.flag = 0;
       this.list = [];
-      console.log(this.queryInfo.query);
+      console.log("allInfo", this.allInfo.query);
 
-      console.log(this.tableData);
       //循环模拟数据的数组
-      await this.tableData.map((msg) => {
+      await this.allData.map((msg) => {
         //拿当前json的id、name、time去分别跟输入的值进行比较
         //indexOf 如果在检索的字符串中没有出现要找的值是会返回-1的，所以我们这里不等于-1就是假设输入框的值在当前json里面找到的情况
-
         if (
-          msg.email.indexOf(this.queryInfo.query) != -1 ||
-          msg.username.indexOf(this.queryInfo.query) != -1
+          msg.email.indexOf(this.queryInfo.query) !== -1 ||
+          msg.username.indexOf(this.queryInfo.query) !== -1
         ) {
+          this.flag++;
           //然后把当前json添加到list数组中
           this.list.push(msg);
         }
       });
-      console.log(this.list);
+      this.searchFlag = true;
+      console.log("查找到的数据", this.list);
       this.tableData = this.list;
     },
 

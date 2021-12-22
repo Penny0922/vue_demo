@@ -58,7 +58,8 @@
                       :key="item3.id"
                       closable
                       @close="removeRightById(scope.row, item3.id)"
-                      >{{ item3.authName }}</el-tag
+                    >
+                      {{ item3.authName }}</el-tag
                     >
                   </el-col>
                 </el-row>
